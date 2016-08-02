@@ -94,7 +94,16 @@ namespace PokemonGo.RocketAPI.Console
                     new Logic.Logic(new Settings()).Execute().Wait();
                 }
             });
-             System.Console.ReadLine();
+
+            string input= System.Console.ReadLine();
+            while (input != "q")
+            {
+                input = System.Console.ReadLine();
+                if (input == "e")
+                    System.Console.WriteLine("export");
+
+
+            }
         }
 
         public static bool Validator(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => true;
