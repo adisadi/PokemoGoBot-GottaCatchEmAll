@@ -22,15 +22,16 @@ namespace PokemonGo.RocketAPI.Logic
         private readonly Client _client;
         public static DateTime LastRefresh;
         public static GetInventoryResponse CachedInventory;
-        private readonly string _exportPath = Path.Combine(Directory.GetCurrentDirectory(), "Export");
+        private string _exportPath;
 
         public Inventory(Client client)
         {
             _client = client;
+            _exportPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), client.Settings.PtcUsername), "Export");
         }
 
         public async Task<IEnumerable<PokemonData>> GetPokemonToTransfer(bool keepPokemonsThatCanEvolve = false, bool prioritizeIVoverCp = false, IEnumerable<PokemonId> filter = null)
-        {    
+        {
             var myPokemon = await GetPokemons();
             var pokemonList = myPokemon.Where(p => p.DeployedFortId == 0 && p.Favorite == 0).ToList();
             if (_client.Settings.UsePokemonToNotTransferList && filter != null)
@@ -72,7 +73,7 @@ namespace PokemonGo.RocketAPI.Logic
 
                 if (settings.CandyToEvolve > 0)
                 {
-                    var amountPossible = familyCandy.Candy/settings.CandyToEvolve;
+                    var amountPossible = familyCandy.Candy / settings.CandyToEvolve;
                     if (amountPossible > amountToSkip)
                         amountToSkip = amountPossible;
                 }
@@ -183,12 +184,12 @@ namespace PokemonGo.RocketAPI.Logic
         }
 
 
-        public async Task<IEnumerable<PokemonData>> GetPokemonToEvolve(bool prioritizeIVoverCp = false, IEnumerable < PokemonId> filter = null)
+        public async Task<IEnumerable<PokemonData>> GetPokemonToEvolve(bool prioritizeIVoverCp = false, IEnumerable<PokemonId> filter = null)
         {
             var myPokemons = await GetPokemons();
             myPokemons = myPokemons.Where(p => p.DeployedFortId == 0);
             if (filter != null)
-                myPokemons = myPokemons.Where(p => filter.Contains(p.PokemonId));		
+                myPokemons = myPokemons.Where(p => filter.Contains(p.PokemonId));
             if (_client.Settings.EvolveOnlyPokemonAboveIV)
                 myPokemons = myPokemons.Where(p => PokemonInfo.CalculatePokemonPerfection(p) >= _client.Settings.EvolveOnlyPokemonAboveIVValue);
             myPokemons = prioritizeIVoverCp ? myPokemons.OrderByDescending(PokemonInfo.CalculatePokemonPerfection) : myPokemons.OrderByDescending(p => p.Cp);

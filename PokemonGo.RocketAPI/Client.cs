@@ -29,14 +29,17 @@ namespace PokemonGo.RocketAPI
         private Request.Types.UnknownAuth _unknownAuth;
         private Random _rand;
 
-        private static readonly string ConfigsPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
-        private static readonly string LastcoordsFile = Path.Combine(ConfigsPath, "LastCoords.ini");
+        private  string ConfigsPath;
+        private  string LastcoordsFile;
 
         public Client(ISettings settings)
         {
             Settings = settings;
 
-            var latLngFromFile = GetLatLngFromFile();
+            ConfigsPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), settings.PtcUsername), "Settings");
+            LastcoordsFile = Path.Combine(ConfigsPath, "LastCoords.ini");
+
+        var latLngFromFile = GetLatLngFromFile();
 
             if (latLngFromFile != null && Math.Abs(latLngFromFile.Item1) > 0 && Math.Abs(latLngFromFile.Item2) > 0)
             {
@@ -69,7 +72,7 @@ namespace PokemonGo.RocketAPI
         /// Gets the lat LNG from file.
         /// </summary>
         /// <returns>Tuple&lt;System.Double, System.Double&gt;.</returns>
-        public static Tuple<double, double> GetLatLngFromFile()
+        public Tuple<double, double> GetLatLngFromFile()
         {
             if (!Directory.Exists(ConfigsPath))
                 Directory.CreateDirectory(ConfigsPath);

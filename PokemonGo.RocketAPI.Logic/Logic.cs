@@ -29,19 +29,23 @@ namespace PokemonGo.RocketAPI.Logic
         private GetPlayerResponse _playerProfile;
         private static DateTime _lastLuckyEggTime;
         private static DateTime _lastIncenseTime;
-        private readonly string _configsPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
+        private  string _configsPath;
 
         private int _recycleCounter = 0;
         private bool _isInitialized = false;
 
         public Logic(ISettings clientSettings)
         {
+
+            _configsPath =Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), clientSettings.PtcUsername), "Settings");
+
             _clientSettings = clientSettings;
-            ResetCoords();
             _client = new Client(_clientSettings);
             _inventory = new Inventory(_client);
             _stats = new BotStats();
             _navigation = new Navigation(_client);
+
+            ResetCoords();
         }
 
         public async Task Execute()
@@ -773,7 +777,7 @@ namespace PokemonGo.RocketAPI.Logic
         {
             var lastcoordsFile = Path.Combine(_configsPath, filename);
             if (!File.Exists(lastcoordsFile)) return;
-            var latLngFromFile = Client.GetLatLngFromFile();
+            var latLngFromFile = _client.GetLatLngFromFile();
             if (latLngFromFile == null) return;
             var distanceInMeters = LocationUtils.CalculateDistanceInMeters(latLngFromFile.Item1, latLngFromFile.Item2, _clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude);
             var lastModified = File.Exists(lastcoordsFile) ? (DateTime?)File.GetLastWriteTime(lastcoordsFile) : null;

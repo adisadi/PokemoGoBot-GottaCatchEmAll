@@ -16,11 +16,20 @@ namespace PokemonGo.RocketAPI.Console
 {
     public class Settings : ISettings
     {
-        private readonly string _configsPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
+        public Settings()
+        {
+            PtcUsername = UserSettings.Default.PtcUsername;
+            PtcPassword = UserSettings.Default.PtcPassword;
+            UseTeleportInsteadOfWalking = UserSettings.Default.UseTeleportInsteadOfWalking;
+
+            _configsPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), PtcUsername), "Settings");
+        }
+
+        private string _configsPath;
 
         public AuthType AuthType => (AuthType)Enum.Parse(typeof(AuthType), UserSettings.Default.AuthType, true);
-        public string PtcUsername => UserSettings.Default.PtcUsername;
-        public string PtcPassword => UserSettings.Default.PtcPassword;
+        public string PtcUsername { get; set; }
+        public string PtcPassword { get; set; }
         public string GoogleEmail => UserSettings.Default.GoogleEmail;
         public string GooglePassword => UserSettings.Default.GooglePassword;
         public double DefaultLatitude => UserSettings.Default.DefaultLatitude;
@@ -33,7 +42,7 @@ namespace PokemonGo.RocketAPI.Console
 
         public double WalkingSpeedInKilometerPerHour => UserSettings.Default.WalkingSpeedInKilometerPerHour;
         public int MaxTravelDistanceInMeters => UserSettings.Default.MaxTravelDistanceInMeters;
-        public bool UseTeleportInsteadOfWalking => UserSettings.Default.UseTeleportInsteadOfWalking;
+        public bool UseTeleportInsteadOfWalking { get; set; }
 
         public bool UsePokemonToNotCatchList => UserSettings.Default.UsePokemonToNotCatchList;
         public bool UsePokemonToNotTransferList => UserSettings.Default.UsePokemonToNotTransferList;
